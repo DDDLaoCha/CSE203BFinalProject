@@ -45,15 +45,22 @@ y_train = scaler_y.fit_transform(y_train.reshape(-1, 1)).ravel()
 startTime = time.time()
 
 # 训练 SVR 模型
-svr_rbf = SVR(kernel='rbf', C=1.0, gamma='scale')
-svr_rbf.fit(X_train, y_train)
+svr_model = SVR(kernel='linear', C=1.0, gamma='scale')
+# svr_model = SVR(kernel='rbf', C=1.0, gamma='scale')
+svr_model.fit(X_train, y_train)
 
 endTime = time.time()
 
 print("Time: ", endTime - startTime)
 
 # 预测
-y_pred = scaler_y.inverse_transform(svr_rbf.predict(X_test).reshape(-1, 1))
+y_pred = scaler_y.inverse_transform(svr_model.predict(X_test).reshape(-1, 1))
+
+w = svr_model.coef_  # w 是 (1, d) 维
+b = svr_model.intercept_
+alpha = np.zeros(X_train.shape[0])
+alpha[svr_model.support_] = svr_model.dual_coef_
+
 
 # print(y_pred[:5])  # 输出部分预测值
 
